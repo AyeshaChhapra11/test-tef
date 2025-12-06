@@ -8,20 +8,15 @@ terraform {
 }
 
 provider "google" {
-  project = "gen-lang-client-0056426034"  # your project ID
-  region  = "us-central1"                 # your region
+  project = "gen-lang-client-0056426034"
+  region  = "us-central1"
 }
 
-# Use an existing bucket instead of creating a new one
+# Use the existing bucket (do NOT create)
 data "google_storage_bucket" "demo_bucket" {
-  name = "moviant-gemini-bucket-12345"    # bucket you already created
+  name = "moviant-gemini-bucket-12345"
 }
 
-# (Optional) outputs if you want to reference this in other places / debug
 output "bucket_name" {
   value = data.google_storage_bucket.demo_bucket.name
-}
-
-output "bucket_url" {
-  value = data.google_storage_bucket.demo_bucket.url
 }
