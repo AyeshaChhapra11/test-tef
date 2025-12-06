@@ -8,13 +8,20 @@ terraform {
 }
 
 provider "google" {
-  project = "gen-lang-client-0056426034"
-  region  = "us-central1"
+  project = "gen-lang-client-0056426034"  # your project ID
+  region  = "us-central1"                 # your region
 }
 
-resource "google_storage_bucket" "demo_bucket" {
-  name                     = "moviant-gemini-bucket-12345"
-  location                 = "US"
-  force_destroy            = true
-  public_access_prevention = "enforced"
+# Use an existing bucket instead of creating a new one
+data "google_storage_bucket" "demo_bucket" {
+  name = "moviant-gemini-bucket-12345"    # bucket you already created
+}
+
+# (Optional) outputs if you want to reference this in other places / debug
+output "bucket_name" {
+  value = data.google_storage_bucket.demo_bucket.name
+}
+
+output "bucket_url" {
+  value = data.google_storage_bucket.demo_bucket.url
 }
