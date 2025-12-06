@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1) Authenticate with Google Cloud using SA key JSON in secret GCP_SA_KEY
+      # Authenticate with Google Cloud
       - name: Google Auth
         uses: google-github-actions/auth@v2
         with:
@@ -33,7 +33,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      # 2) Terraform – just ensures the bucket config is valid / readable
+      # Terraform – validates bucket config / reads existing bucket
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -43,8 +43,18 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
-      # 3) Make sure required APIs are enabled (no-op if already enabled)
-      - name: Enable required APIs
+      # Check bucket exists
+      - name: Check GCS Bucket
         run: |
-          gcloud services enable \
-            run.g
+          gsutil ls -b gs://${BUCKET_NAME}
+          echo "Bucket exists!"
+
+      # Deploy Streamlit app to Cloud Run
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${SERVICE_NAME} \
+            --source . \
+            --platform managed \
+            --region ${REGION} \
+            --allow-unauthenticated \
+            --quiet
